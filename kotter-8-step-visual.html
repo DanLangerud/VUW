@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotter's 8-Step Change Model - Florena Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #8B7355 0%, #D4A574 50%, #E8D5B7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .title {
+            color: #3C2415;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+            animation: fadeIn 1s ease-in;
+            font-weight: normal;
+        }
+
+        .subtitle {
+            color: #5D4037;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in;
+            font-style: italic;
+        }
+
+        .mountain-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        .mountain {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #FFF8E1 0%, #F5E6D3 50%, #E8D5B7 100%);
+            clip-path: polygon(50% 0%, 85% 40%, 95% 60%, 100% 100%, 0% 100%, 5% 60%, 15% 40%);
+            box-shadow: 0 10px 30px rgba(60, 36, 21, 0.2);
+        }
+
+        .path {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .path-line {
+            stroke: #6D4C41;
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 5, 5;
+            opacity: 0.4;
+        }
+
+        .step {
+            position: absolute;
+            width: 180px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(60, 36, 21, 0.25);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0;
+            border: 2px solid #F5E6D3;
+        }
+
+        .step:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(60, 36, 21, 0.35);
+            z-index: 10;
+            border-color: #D4A574;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            color: #FFF8E1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 3px 10px rgba(60, 36, 21, 0.3);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #3C2415;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .step-description {
+            color: #5D4037;
+            font-size: 0.85em;
+            line-height: 1.4;
+            font-family: 'Georgia', serif;
+        }
+
+        .step-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        /* Position each step along the mountain path */
+        .step1 { left: 5%; bottom: 10%; animation-delay: 0.2s; }
+        .step2 { left: 15%; bottom: 25%; animation-delay: 0.4s; }
+        .step3 { left: 25%; bottom: 40%; animation-delay: 0.6s; }
+        .step4 { left: 35%; bottom: 55%; animation-delay: 0.8s; }
+        .step5 { right: 35%; bottom: 55%; animation-delay: 1s; }
+        .step6 { right: 25%; bottom: 40%; animation-delay: 1.2s; }
+        .step7 { right: 15%; bottom: 25%; animation-delay: 1.4s; }
+        .step8 { right: 5%; bottom: 10%; animation-delay: 1.6s; }
+
+        .flag {
+            position: absolute;
+            top: -5%;
+            left: 47%;
+            width: 60px;
+            height: 80px;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        .flag-pole {
+            width: 3px;
+            height: 80px;
+            background: #3C2415;
+            position: absolute;
+        }
+
+        .flag-fabric {
+            position: absolute;
+            left: 3px;
+            width: 50px;
+            height: 35px;
+            background: linear-gradient(135deg, #C8A882 0%, #D4A574 100%);
+            clip-path: polygon(0 0, 100% 10%, 85% 50%, 100% 90%, 0 100%);
+        }
+
+        .climber {
+            position: absolute;
+            font-size: 2em;
+            animation: climb 8s ease-in-out infinite;
+        }
+
+        .phase-indicator {
+            position: absolute;
+            bottom: -80px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 50px;
+        }
+
+        .phase {
+            text-align: center;
+            color: #3C2415;
+            padding: 10px 20px;
+            background: rgba(255, 248, 225, 0.7);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid #D4A574;
+        }
+
+        .phase-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .phase-steps {
+            font-size: 0.9em;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes climb {
+            0% { left: 5%; bottom: 10%; }
+            12.5% { left: 15%; bottom: 25%; }
+            25% { left: 25%; bottom: 40%; }
+            37.5% { left: 38%; bottom: 52%; }
+            50% { left: 48%; bottom: 65%; }
+            62.5% { right: 38%; bottom: 52%; }
+            75% { right: 25%; bottom: 40%; }
+            87.5% { right: 15%; bottom: 25%; }
+            100% { right: 5%; bottom: 10%; }
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 248, 225, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 250px;
+            box-shadow: 0 5px 20px rgba(60, 36, 21, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border: 1px solid #D4A574;
+        }
+
+        .info-panel.active {
+            opacity: 1;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #3C2415;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .info-content {
+            color: #5D4037;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .context-note {
+            margin-top: 80px;
+            padding: 15px;
+            background: rgba(255, 248, 225, 0.8);
+            border-radius: 8px;
+            border-left: 4px solid #8B7355;
+            color: #3C2415;
+            max-width: 800px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .step {
+                width: 140px;
+                padding: 10px;
+            }
+            
+            .step-title {
+                font-size: 0.85em;
+            }
+            
+            .step-description {
+                font-size: 0.75em;
+            }
+            
+            .title {
+                font-size: 1.8em;
+            }
+            
+            .mountain-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">Kotter's 8-Step Change Model</h1>
+    <p class="subtitle">Building Transformation with Values & Craft</p>
+    
+    <div class="mountain-container">
+        <div class="mountain"></div>
+        
+        <svg class="path" viewBox="0 0 1200 600">
+            <path class="path-line" d="M 60 540 Q 180 450 300 360 T 540 280 T 780 360 T 900 450 T 1140 540"/>
+        </svg>
+        
+        <div class="flag">
+            <div class="flag-pole"></div>
+            <div class="flag-fabric"></div>
+        </div>
+        
+        <div class="climber">🧗</div>
+        
+        <div class="step step1" onclick="showInfo(1)">
+            <div class="step-number">1</div>
+            <div class="step-icon">⚡</div>
+            <div class="step-title">Create Urgency</div>
+            <div class="step-description">Highlight risks, build momentum for change</div>
+        </div>
+        
+        <div class="step step2" onclick="showInfo(2)">
+            <div class="step-number">2</div>
+            <div class="step-icon">🤝</div>
+            <div class="step-title">Form Coalition</div>
+            <div class="step-description">Assemble credible leaders & staff</div>
+        </div>
+        
+        <div class="step step3" onclick="showInfo(3)">
+            <div class="step-number">3</div>
+            <div class="step-icon">🎯</div>
+            <div class="step-title">Create Vision</div>
+            <div class="step-description">Clear, inspiring, aligned with values</div>
+        </div>
+        
+        <div class="step step4" onclick="showInfo(4)">
+            <div class="step-number">4</div>
+            <div class="step-icon">💬</div>
+            <div class="step-title">Communicate Vision</div>
+            <div class="step-description">Repeat, embed in daily routines</div>
+        </div>
+        
+        <div class="step step5" onclick="showInfo(5)">
+            <div class="step-number">5</div>
+            <div class="step-icon">✊</div>
+            <div class="step-title">Empower Action</div>
+            <div class="step-description">Remove obstacles, support staff to act</div>
+        </div>
+        
+        <div class="step step6" onclick="showInfo(6)">
+            <div class="step-number">6</div>
+            <div class="step-icon">⭐</div>
+            <div class="step-title">Create Quick Wins</div>
+            <div class="step-description">Deliver visible, early successes</div>
+        </div>
+        
+        <div class="step step7" onclick="showInfo(7)">
+            <div class="step-number">7</div>
+            <div class="step-icon">📈</div>
+            <div class="step-title">Build on Change</div>
+            <div class="step-description">Adapt, expand, avoid stagnation</div>
+        </div>
+        
+        <div class="step step8" onclick="showInfo(8)">
+            <div class="step-number">8</div>
+            <div class="step-icon">🏛️</div>
+            <div class="step-title">Anchor in Culture</div>
+            <div class="step-description">Embed new behaviours in values & systems</div>
+        </div>
+        
+        <div class="phase-indicator">
+            <div class="phase">
+                <div class="phase-title">Creating Climate</div>
+                <div class="phase-steps">Steps 1-3</div>
+            </div>
+            <div class="phase">
+                <div class="phase-title">Engaging & Enabling</div>
+                <div class="phase-steps">Steps 4-6</div>
+            </div>
+            <div class="phase">
+                <div class="phase-title">Implementing & Sustaining</div>
+                <div class="phase-steps">Steps 7-8</div>
+            </div>
+        </div>
+        
+        <div class="info-panel" id="infoPanel">
+            <div class="info-title" id="infoTitle"></div>
+            <div class="info-content" id="infoContent"></div>
+        </div>
+    </div>
+    
+    <div class="context-note">
+        <strong>Applying to Values-Driven Organizations:</strong> In contexts like Florena's bakery, where values of kindness, community, and craft are central, each step requires special attention to maintaining authenticity. The "Melissa situation" demonstrates how change management must balance business needs with psychological contracts and team cohesion.
+    </div>
+    
+    <script>
+        const stepDetails = {
+            1: {
+                title: "Step 1: Create Urgency",
+                content: "Start by making people aware that change is necessary. In values-driven organizations, frame urgency around protecting what matters - the mission, the team, the community served. Identify threats to values, not just profits."
+            },
+            2: {
+                title: "Step 2: Form a Powerful Coalition",
+                content: "Build a team of influential people who embody organizational values. Include both formal leaders and informal influencers. Ensure the coalition represents diverse perspectives while maintaining shared commitment to core values."
+            },
+            3: {
+                title: "Step 3: Create a Vision",
+                content: "Develop a vision that honors both business needs and human values. The vision should feel authentic to the organization's identity. It must address: What are we becoming? How will we stay true to ourselves?"
+            },
+            4: {
+                title: "Step 4: Communicate the Vision",
+                content: "Communication must be consistent and transparent. Address the 'values-practice gap' honestly. Use stories and examples that resonate with the organization's culture. Remember: silence breeds mistrust."
+            },
+            5: {
+                title: "Step 5: Empower Action",
+                content: "Remove barriers while maintaining psychological safety. Support managers like Victoria who struggle with difficult conversations. Provide tools and training for values-based decision making under pressure."
+            },
+            6: {
+                title: "Step 6: Create Quick Wins",
+                content: "Celebrate successes that demonstrate values in action, not just financial gains. Recognize people who embody the change. Make wins visible to counter cynicism and rebuild trust after disappointments."
+            },
+            7: {
+                title: "Step 7: Build on the Change",
+                content: "Use lessons from situations like Melissa's to improve systems. Don't let momentum stall after initial success. Continue evolving while staying anchored to core values. Address unintended consequences quickly."
+            },
+            8: {
+                title: "Step 8: Anchor in Culture",
+                content: "Embed changes in policies, processes, and daily practices. Update hiring, promotion, and communication systems. Ensure new behaviors align with stated values. Make the new way 'how we do things here.'"
+            }
+        };
+        
+        function showInfo(step) {
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('infoTitle');
+            const content = document.getElementById('infoContent');
+            
+            title.textContent = stepDetails[step].title;
+            content.textContent = stepDetails[step].content;
+            panel.classList.add('active');
+            
+            setTimeout(() => {
+                panel.classList.remove('active');
+            }, 5000);
+        }
+        
+        // Add pulse animation to steps
+        document.querySelectorAll('.step').forEach((step, index) => {
+            step.addEventListener('mouseenter', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 10);
+            });
+        });
+    </script>
+</body>
+</html>
