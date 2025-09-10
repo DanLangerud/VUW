@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Performance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Georgia, serif;
+            background: #F5F5DC;
+            min-height: 100vh;
+            padding: 20px;
+            color: #2F4F2F;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(47, 79, 47, 0.1);
+            overflow: hidden;
+            border: 2px solid #8B7355;
+        }
+
+        .header {
+            background: #2F4F2F;
+            color: #F5F5DC;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .highlight-box {
+            background: #F0F8E8;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #8B7355;
+        }
+
+        .highlight-box h2 {
+            color: #2F4F2F;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        .highlight-box p {
+            color: #556B2F;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 3px 8px rgba(47, 79, 47, 0.15);
+            border: 1px solid #D2B48C;
+            border-left: 4px solid #8B7355;
+        }
+
+        .kpi-title {
+            font-weight: bold;
+            color: #2F4F2F;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 1px solid #F0F8E8;
+            padding-bottom: 8px;
+        }
+
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .performance-table th {
+            background: #F0F8E8;
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #D2B48C;
+            font-size: 0.85em;
+            color: #2F4F2F;
+            font-weight: bold;
+        }
+
+        .performance-table td {
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #D2B48C;
+            font-size: 0.85em;
+        }
+
+        .score-cell {
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .score-excellent { 
+            background: #E8F5E8; 
+            color: #2F4F2F; 
+            font-weight: bold;
+        }
+        .score-good { 
+            background: #F0F8E8; 
+            color: #556B2F; 
+            font-weight: bold;
+        }
+        .score-warning { 
+            background: #FFF8DC; 
+            color: #8B7355; 
+            font-weight: bold;
+        }
+        .score-poor { 
+            background: #F5E6D3; 
+            color: #8B4513; 
+            font-weight: bold;
+        }
+
+        .target-info {
+            background: #F0F8E8;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 0.9em;
+            color: #2F4F2F;
+            border-left: 3px solid #8B7355;
+        }
+
+        .summary-section {
+            background: #F5F5DC;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid #D2B48C;
+        }
+
+        .summary-section h3 {
+            color: #2F4F2F;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 18px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(47, 79, 47, 0.1);
+            border: 1px solid #D2B48C;
+        }
+
+        .insight-card h4 {
+            color: #2F4F2F;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .insight-card p {
+            color: #556B2F;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .success-indicator {
+            color: #2F4F2F;
+            font-weight: bold;
+        }
+
+        .opportunity-indicator {
+            color: #8B7355;
+            font-weight: bold;
+        }
+
+        .kpi-explanation-section {
+            background: #F5F5DC;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 2px solid #D2B48C;
+        }
+
+        .kpi-explanation-section h3 {
+            color: #2F4F2F;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .explanation-card {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(47, 79, 47, 0.1);
+            border: 1px solid #D2B48C;
+        }
+
+        .explanation-card h4 {
+            color: #2F4F2F;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #F0F8E8;
+            padding-bottom: 8px;
+        }
+
+        .explanation-content p {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #556B2F;
+        }
+
+        .explanation-content strong {
+            color: #2F4F2F;
+        }
+
+        .explanation-content em {
+            color: #8B7355;
+            font-style: italic;
+        }
+
+        .action-callout {
+            background: #E8F5E8;
+            padding: 18px;
+            border-radius: 6px;
+            border-left: 4px solid #2F4F2F;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .action-callout p {
+            color: #2F4F2F;
+            font-size: 1.1em;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .performance-note {
+            font-size: 0.8em;
+            color: #8B7355;
+            font-style: italic;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KPI Performance Dashboard</h1>
+            <p>Organisational Excellence & Innovation in Action</p>
+        </div>
+
+        <div class="highlight-box">
+            <h2>New KPI Implementation</h2>
+            <p>Starting in <strong>October 2025</strong>, this organisation implemented <strong>8 comprehensive KPIs</strong> to track both operational performance and workforce wellbeing.</p>
+        </div>
+
+        <div class="content">
+            <div class="kpi-grid">
+                <!-- Existing Operational KPIs -->
+                <div class="kpi-card">
+                    <div class="kpi-title">👥 Headcount (FTE)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>777</td><td>778</td><td>888</td><td>940</td><td>950</td><td>940</td>
+                            <td class="score-excellent">1,050</td>
+                        </tr>
+                        <tr>
+                            <td class="score-warning">74.0%</td><td class="score-warning">74.1%</td><td class="score-good">84.6%</td><td class="score-good">89.5%</td><td class="score-good">90.5%</td><td class="score-good">89.5%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="performance-note">Performance: Steady growth trajectory, approaching optimal staffing levels</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">⏰ Staff Hours</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>1,060</td><td>1,050</td><td>1,070</td><td>1,060</td><td>1,050</td><td>1,070</td>
+                            <td class="score-excellent">≥1,050</td>
+                        </tr>
+                        <tr>
+                            <td class="score-excellent">101.0%</td><td class="score-excellent">100.0%</td><td class="score-excellent">102.0%</td><td class="score-excellent">101.0%</td><td class="score-excellent">100.0%</td><td class="score-excellent">102.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="performance-note">Performance: Consistent delivery, meeting operational demands</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">💰 Productivity (NZ$/hr)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>32</td><td>31</td><td>30.5</td><td>31.5</td><td>32</td><td>33</td>
+                            <td class="score-excellent">≥33.0</td>
+                        </tr>
+                        <tr>
+                            <td class="score-good">97.0%</td><td class="score-warning">93.9%</td><td class="score-warning">92.4%</td><td class="score-good">95.5%</td><td class="score-good">97.0%</td><td class="score-excellent">100.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="performance-note">Performance: Upward trend, reaching target by December</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">📈 Monthly Revenue (NZ$)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>41,000</td><td>39,500</td><td>38,000</td><td>37,000</td><td>42,500</td><td>45,000</td>
+                            <td class="score-excellent">≥42,000</td>
+                        </tr>
+                        <tr>
+                            <td class="score-good">97.6%</td><td class="score-warning">94.0%</td><td class="score-warning">90.5%</td><td class="score-warning">88.1%</td><td class="score-excellent">101.2%</td><td class="score-excellent">107.1%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="performance-note">Performance: Strong recovery in Q4, exceeding targets</div>
+                </div>
+
+                <!-- New Wellbeing KPIs (October onwards) -->
+                <div class="kpi-card">
+                    <div class="kpi-title">🏥 EAP Usage (%)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td class="score-excellent">0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td>
+                            <td class="score-excellent">0–1</td>
+                        </tr>
+                        <tr>
+                            <td class="score-excellent">0.0%</td><td class="score-excellent">100.0%</td><td class="score-excellent">100.0%</td><td class="score-excellent">100.0%</td><td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Employee wellbeing support utilisation tracking
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">🏠 Absenteeism (%)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td class="score-warning">2.9</td><td>3.2</td><td>3.5</td><td class="score-warning">2.8</td><td>3.0</td><td>3.1</td>
+                            <td class="score-excellent">≤2.5%</td>
+                        </tr>
+                        <tr>
+                            <td class="score-warning">116.0%</td><td class="score-poor">128.0%</td><td class="score-poor">140.0%</td><td class="score-warning">112.0%</td><td class="score-poor">120.0%</td><td class="score-poor">124.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Workforce attendance and engagement measurement
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">🔄 Turnover (%)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td class="score-excellent">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                            <td class="score-excellent">≤1.0%</td>
+                        </tr>
+                        <tr>
+                            <td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td><td class="score-excellent">0.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Staff retention and organisational stability
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">😊 eNPS (0–10)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td class="score-warning">6</td><td>5</td><td>4.5</td><td class="score-warning">4</td><td>4</td><td>4.5</td>
+                            <td class="score-excellent">≥7.0</td>
+                        </tr>
+                        <tr>
+                            <td class="score-warning">85.7%</td><td class="score-warning">71.4%</td><td class="score-poor">64.3%</td><td class="score-warning">57.1%</td><td class="score-warning">57.1%</td><td class="score-poor">64.3%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Employee Net Promoter Score for engagement
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">☕ Break Compliance (%)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-warning">70</td><td>75</td><td>65</td>
+                            <td class="score-excellent">≥90%</td>
+                        </tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-warning">77.8%</td><td class="score-warning">83.3%</td><td class="score-warning">72.2%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Employee wellbeing and compliance monitoring
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">😴 Fatigue Index (1–5)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-poor">4.2</td><td>3.8</td><td>4.5</td>
+                            <td class="score-excellent">≤3.0</td>
+                        </tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-poor">140.0%</td><td class="score-poor">126.7%</td><td class="score-poor">150.0%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Employee fatigue and workload management
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">⭐ Recognition/Fairness (1–5)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-warning">2.8</td><td>3.0</td><td>2.5</td>
+                            <td class="score-excellent">≥4.0</td>
+                        </tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-warning">70.0%</td><td class="score-warning">75.0%</td><td class="score-poor">62.5%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Employee satisfaction with recognition and fairness
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-title">📞 Customer Complaints (% of txns)</div>
+                    <table class="performance-table">
+                        <tr><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Target</th></tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-poor">2.5</td><td>2</td><td>3.2</td>
+                            <td class="score-excellent">≤1.5%</td>
+                        </tr>
+                        <tr>
+                            <td>-</td><td>-</td><td>-</td><td class="score-poor">166.7%</td><td class="score-poor">133.3%</td><td class="score-poor">213.3%</td>
+                            <td style="background: #F0F8E8; color: #2F4F2F; font-weight: bold;">Target</td>
+                        </tr>
+                    </table>
+                    <div class="target-info">
+                        <strong>Focus:</strong> Customer satisfaction and service quality
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Key Performance Insights</h3>
+                <div class="insight-grid">
+                    <div class="insight-card">
+                        <h4>📊 Organisational Strengths</h4>
+                        <p>Revenue recovery showing <span class="success-indicator">strong momentum</span> with December targets exceeded. Productivity trending upward consistently.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🎯 Wellbeing Focus Areas</h4>
+                        <p>New KPI designs focus on <span class="success-indicator">people-centred metrics</span> - wellbeing, retention, and engagement. These are critical for sustainable growth.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>📈 Growth Opportunities</h4>
+                        <p>October implementation shows these KPIs provide <span class="opportunity-indicator">real-time insights</span> into workforce health and satisfaction.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🔍 Strategic Value</h4>
+                        <p>These metrics complement financial KPIs with <span class="success-indicator">human capital indicators</span> - essential for modern business success.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-explanation-section">
+                <h3>The Four New KPIs – How They Work at Rutherford</h3>
+                
+                <div class="explanation-grid">
+                    <div class="explanation-card">
+                        <h4>☕ Break Compliance (%)</h4>
+                        <div class="explanation-content">
+                            <p><strong>How measured:</strong> Roster/whiteboard tally — staff mark "Yes/No" if they got their full break.</p>
+                            <p><strong>Current status:</strong> ~45% compliance.</p>
+                            <p><strong>HeyPenny link:</strong> <em>Workload, Job Control, Working Hours, Rest & Recovery</em></p>
+                            <p><strong>Interpretation:</strong> Staff frequently skip breaks to cover gaps. Cynicism rising: <em>"What good is counting if nothing changes?"</em></p>
+                            <p><strong>Action point:</strong> Highlights workload strain and need for roster relief.</p>
+                        </div>
+                    </div>
+
+                    <div class="explanation-card">
+                        <h4>😴 Fatigue Index (1–5)</h4>
+                        <div class="explanation-content">
+                            <p><strong>How measured:</strong> Anonymous weekly survey — start-of-shift vs. end-of-shift fatigue.</p>
+                            <p><strong>Current status:</strong> Average = 3 (start) → 5 (end).</p>
+                            <p><strong>HeyPenny link:</strong> <em>Workload, Rest & Recovery, Support, Psychological Safety</em></p>
+                            <p><strong>Interpretation:</strong> Consistent pattern of exhaustion by shift end. Confirms staff are being pushed beyond sustainable levels.</p>
+                            <p><strong>Action point:</strong> Early warning sign of burnout before absenteeism/turnover.</p>
+                        </div>
+                    </div>
+
+                    <div class="explanation-card">
+                        <h4>⭐ Recognition & Fairness Score (1–5)</h4>
+                        <div class="explanation-content">
+                            <p><strong>How measured:</strong> Weekly one-item survey — <em>"In the past week, do you feel recognition and praise were fairly shared?"</em></p>
+                            <p><strong>Current status:</strong> ~2.7/5.</p>
+                            <p><strong>HeyPenny link:</strong> <em>Reward & Recognition, Career Opportunities, Organisational Justice, Leadership, Workplace Culture</em></p>
+                            <p><strong>Interpretation:</strong> Melissa's disengagement + uneven feedback practices pulling scores down. Staff perceive recognition as inconsistent and unfair.</p>
+                            <p><strong>Action point:</strong> Leadership coaching, structured recognition systems, and transparent criteria needed.</p>
+                        </div>
+                    </div>
+
+                    <div class="explanation-card">
+                        <h4>📞 Customer Complaints / Service Errors</h4>
+                        <div class="explanation-content">
+                            <p><strong>How measured:</strong> POS refunds + FOH tallies of errors/complaints.</p>
+                            <p><strong>Current status:</strong> Up ~15% since October.</p>
+                            <p><strong>HeyPenny link:</strong> <em>Work Relations, Workload, Equipment/IT/Staffing, Physical Conditions, Change Management</em></p>
+                            <p><strong>Interpretation:</strong> Service quality visibly affected by staff fatigue and workload strain. Customers notice delays and errors.</p>
+                            <p><strong>Action point:</strong> Links employee wellbeing directly to customer experience — evidence for resourcing and workload fixes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-callout">
+                    <p>HQ expects Victoria to demonstrate measurable improvement in at least two of these KPIs before January.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
